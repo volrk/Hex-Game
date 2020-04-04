@@ -1,5 +1,5 @@
 [package]
-name = "back"
+name = "hex_back"
 version = "0.1.0"
 authors = ["volrk <thibaut.boulard@hotmail.fr>"]
 edition = "2018"
