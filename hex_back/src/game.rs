@@ -2,7 +2,7 @@ use serde::{Serialize};
 
 use crate::tile::Tile;
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 pub struct Game {
     board: Vec<Vec<Option<Tile>>>,
 }
