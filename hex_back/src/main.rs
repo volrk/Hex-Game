@@ -8,6 +8,7 @@ use rocket_contrib::json::Json;
 use std::sync::Mutex;
 use rocket::State;
 use rocket::http::Method;
+use rocket::request::Form;
 use rocket_cors::{
     AllowedHeaders, AllowedOrigins,
     Cors, CorsOptions
@@ -36,10 +37,19 @@ fn get_current(shared: State<SharedData>) -> Json<game::Game> {
     Json(shared.inner().game.lock().unwrap().game.clone())
 }
 
+#[post("/play", data = "<input>")]
+fn play(shared: State<SharedData>, input: Form<tile::Tile>) -> Json<game::Game> {
+    let current_game = shared.inner().game.lock().unwrap().game.clone();
+    let game = game::play(current_game, input.0);
+    shared.inner().game.lock().unwrap().game = game.clone();
+    Json(game.clone())
+}
+
+
 fn main() {
     rocket::ignite()
     .manage(SharedData { game: Mutex::new(ToMutex{game : game::Game::new(11u8)}) })
-    .mount("/", routes![index, new, get_current])
+    .mount("/", routes![index, new, get_current, play])
     .attach(make_cors())
     .launch();
 }
