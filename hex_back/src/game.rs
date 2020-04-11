@@ -14,3 +14,10 @@ impl Game {
         }
     }
 }
+
+pub fn play(mut game: Game, tile: Tile) -> Game {
+    let x = *tile.x() as usize;
+    let y = *tile.y() as usize;
+    game.board[x][y] = Some(tile);
+    game
+}
