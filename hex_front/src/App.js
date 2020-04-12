@@ -1,11 +1,13 @@
 import React from 'react';
 import RawBack from './RawBack'
+import NewGame from './NewGame'
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <RawBack/>
+      <RawBack />
+      <NewGame />
     </div>
   );
 }
