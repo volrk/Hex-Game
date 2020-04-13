@@ -2,14 +2,19 @@ use serde::{Serialize,Deserialize};
 
 #[derive(Serialize, Deserialize , FromForm, Clone)]
 pub struct Tile {
-    playeur: u8,
+    player: u8,
     x: u8,
     y: u8,
 }
 
 impl Tile {
-    pub fn playeur(&self) -> &u8 {
-        &self.playeur
+    pub fn new(player: u8, x: u8, y: u8) -> Tile{
+        Tile{
+            player,x,y,
+        }
+    } 
+    pub fn player(&self) -> &u8 {
+        &self.player
     }
 
     pub fn x(&self) -> &u8 {
