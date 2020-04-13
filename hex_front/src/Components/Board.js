@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Square from './Square';
 
 export default function Board(props) {
-    const [PlayerTurn, setPlayerTurn] = useState(1);
+    const [PlayerTurn, setPlayerTurn] = useState(props.game.player);
 
     let handleClickBrd = (idX, idY) => {
         fetch(`${process.env.REACT_APP_RASPBERRY || ""}/play`, {
@@ -23,7 +23,7 @@ export default function Board(props) {
 
     return (
         <div>
-            C'est au tour du joueur {PlayerTurn}
+            C'est au tour du <span style={{ color: (PlayerTurn === 1) ? "lawngreen" : "red" }}> joueur {PlayerTurn} </span>
             {
                 props.game.board.map((valX, indexX) => {
                     return <div

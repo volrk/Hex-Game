@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Square.css';
 
 export default function Square(props) {
@@ -13,7 +13,6 @@ export default function Square(props) {
 
     return (
         <button className={"square player" + props.player} onClick={() => { handleClickSquare() }}>
-            X: {props.idxX} - Y: {props.idxY}
         </button >
     );
 
