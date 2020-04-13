@@ -21,11 +21,7 @@ pub fn play(mut game: Game, tile: Tile) -> Game {
     let x = *tile.x() as usize;
     let y = *tile.y() as usize;
     game.board[x][y] = Some(tile);
-    if game.player == 1 {
-        game.player = 2;
-    } else {
-        game.player = 1;
-    }
+    game.player = 3 - game.player;
     game
 }
 
