@@ -9,7 +9,7 @@ export default class Square extends React.Component {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ playeur: 1, x: this.props.idxX, y: this.props.idxY })
+            body: JSON.stringify({ player: 1, x: this.props.idxX, y: this.props.idxY })
         });
     }
 
