@@ -7,10 +7,7 @@ extern crate rocket_cors;
 use rocket_contrib::json::Json;
 use std::sync::Mutex;
 use rocket::State;
-use rocket::http::Method;
-use rocket::request::Form;
 use rocket_cors::{
-    AllowedHeaders, AllowedOrigins,
     Cors, CorsOptions
 };
 
@@ -55,10 +52,6 @@ fn main() {
 }
  
 fn make_cors() -> Cors {
-    let allowed_origins = AllowedOrigins::some_exact(&[
-        "http://localhost:3000",
-    ]);
-
     CorsOptions {
         ..Default::default()
     }
