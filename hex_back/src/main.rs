@@ -38,7 +38,7 @@ fn get_current(shared: State<SharedData>) -> Json<game::Game> {
 }
 
 #[post("/play", data = "<input>")]
-fn play(shared: State<SharedData>, input: Form<tile::Tile>) -> Json<game::Game> {
+fn play(shared: State<SharedData>, input: Json<tile::Tile>) -> Json<game::Game> {
     let current_game = shared.inner().game.lock().unwrap().game.clone();
     let game = game::play(current_game, input.0);
     shared.inner().game.lock().unwrap().game = game.clone();
@@ -60,14 +60,6 @@ fn make_cors() -> Cors {
     ]);
 
     CorsOptions {
-        allowed_origins,
-        allowed_methods: vec![Method::Get].into_iter().map(From::from).collect(),
-        allowed_headers: AllowedHeaders::some(&[
-            "Authorization",
-            "Accept",
-            "Access-Control-Allow-Origin",  
-        ]),
-        allow_credentials: true,
         ..Default::default()
     }
     .to_cors()
