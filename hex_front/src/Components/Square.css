@@ -4,3 +4,15 @@
     border: 2px solid;
 
 }
+
+.playerundefined{
+    cursor: pointer;
+}
+
+.player1{
+    background: lawngreen;
+}
+
+.player2{
+    background: red;
+}

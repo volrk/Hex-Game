@@ -21,5 +21,5 @@ export default function NewGame() {
     return <div> "Empty game" </div>
   }
 
-  return <Board game={game} />;
+  return <Board game={game} setGame={setGame} />;
 }
