@@ -36,6 +36,8 @@ fn test_change_player() {
 
 #[test]
 fn test_play() {
-    let play_game = play(Game::new(5), Tile::new(1, 0, 0));
+    let new_game = Game::new(5);
+    assert!(!new_game.board[0][0].is_some());
+    let play_game = play(new_game, Tile::new(1, 0, 0));
     assert!(play_game.board[0][0].is_some());
 }
