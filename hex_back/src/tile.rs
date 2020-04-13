@@ -1,6 +1,6 @@
-use serde::{Serialize};
+use serde::{Serialize,Deserialize};
 
-#[derive(Serialize, FromForm, Clone)]
+#[derive(Serialize, Deserialize , FromForm, Clone)]
 pub struct Tile {
     playeur: u8,
     x: u8,
