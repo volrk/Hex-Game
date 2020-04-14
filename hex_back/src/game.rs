@@ -23,13 +23,17 @@ pub fn check(game: & Game, tile: & Tile) -> Result<(), String> {
     }
     let x = *tile.x() as usize;
     let y = *tile.y() as usize;
+    if game.board.len() <= x || game.board[x].len() <= y {
+        return Err(format!("la position ({}, {}) n'est pas jouable", x, y));
+    }
     if game.board[x][y].is_some() {
         return Err("Position déjà jouée".to_string());
     }
+
     Ok(())
 }
 
-pub fn play(game: & Game, tile: & Tile) -> Game {
+pub fn play(game: &Game, tile: &Tile) -> Game {
     let mut curent_game = game.clone();
     let x = *tile.x() as usize;
     let y = *tile.y() as usize;
@@ -71,9 +75,16 @@ fn test_check_curent_player() {
 fn test_check_tile_played() {
     let mut new_game = Game::new(5);
     assert_eq!(1, new_game.player);
-    assert_eq!(1, new_game.player);
     assert!(new_game.board[0][0].is_none());
     assert!(check(&new_game, &Tile::new(1, 0, 0)).is_ok());
     new_game.board[0][0] = Some(Tile::new(1, 0, 0));
     assert!(check(&new_game, &Tile::new(1, 0, 0)).is_err());
+}
+
+#[test]
+fn test_play_in_board() {
+    let new_game = Game::new(5);
+    assert!(check(&new_game, &Tile::new(1, 0, 0)).is_ok());
+    assert!(check(&new_game, &Tile::new(1, 5, 0)).is_err());
+    assert!(check(&new_game, &Tile::new(1, 0, 5)).is_err());
 }
