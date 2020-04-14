@@ -10,6 +10,7 @@ use rocket::State;
 use rocket_cors::{
     Cors, CorsOptions
 };
+use rocket::response::status::BadRequest;
 
 mod game;
 mod tile;
@@ -35,11 +36,12 @@ fn get_current(shared: State<SharedData>) -> Json<game::Game> {
 }
 
 #[post("/play", data = "<input>")]
-fn play(shared: State<SharedData>, input: Json<tile::Tile>) -> Json<game::Game> {
-    let current_game = shared.inner().game.lock().unwrap().game.clone();
-    let game = game::play(current_game, input.0);
-    shared.inner().game.lock().unwrap().game = game.clone();
-    Json(game.clone())
+fn play(shared: State<SharedData>, input: Json<tile::Tile>) -> Result<Json<game::Game>, BadRequest<String>> {
+    let game = shared.inner().game.lock().unwrap().game.clone();
+    game::check(&game, & input.0).map_err(|e| BadRequest(Some(e)))?;
+    let played_game = game::play(& game, & input.0);
+    shared.inner().game.lock().unwrap().game = played_game.clone();
+    Ok(Json(played_game.clone())) 
 }
 
 
