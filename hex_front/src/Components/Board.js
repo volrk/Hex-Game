@@ -5,10 +5,10 @@ export default class Board extends React.Component {
     render() {
         return (
             <div>
-                {this.props.game.board.map((val, index) => {
+                {this.props.game.board.map((valX, indexX) => {
                     return <div
-                        style={{ paddingLeft: 60 * index }}>
-                        {val.map(() => <Square />)}
+                        style={{ paddingLeft: 60 * indexX }}>
+                        {valX.map((valY, indexY) => <Square idxX={indexX} idxY={indexY} />)}
                     </div>
                 }
                 )
