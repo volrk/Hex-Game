@@ -1,11 +1,12 @@
 use serde::{Serialize};
-
+use std::collections::HashMap;
 use crate::tile::Tile;
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug)]
 pub struct Game {
     board: Vec<Vec<Option<Tile>>>,
     player: u8,
+    winner: Option<u8>,
 }
 
 impl Game {
@@ -13,11 +14,15 @@ impl Game {
         Game{
             board: (0..val).map(|_| (0..val).map(|_| None).collect()).collect(),
             player: 1,
+            winner: None,
         }
     }
 }
 
 pub fn check(game: & Game, tile: & Tile) -> Result<(), String> {
+    if game.winner.is_some() {
+        return Err("Il y a déjà un vainqueur".to_string());
+    }
     if game.player != *tile.player() {
         return Err("C'est pas le bon joueur".to_string());
     }
@@ -38,10 +43,114 @@ pub fn play(game: &Game, tile: &Tile) -> Game {
     let x = *tile.x() as usize;
     let y = *tile.y() as usize;
     curent_game.board[x][y] = Some(tile.clone());
+    if is_winner(game, game.player){
+        curent_game.winner = Some(game.player);
+    }
     curent_game.player = 3 - game.player;
     curent_game
 }
 
+fn is_winner(game: &Game, playeur: u8) -> bool {
+    let mut map: HashMap<(u8,u8), ()> = HashMap::new();
+    if playeur == 1 {
+        for o_tile in &(game.board[0]) {
+            match o_tile {
+                Some(tile) if *tile.player() == playeur => {
+                    if map.get(&(*tile.x(), *tile.y())).is_none(){
+                        map.insert((*tile.x(), *tile.y()), ());
+                        let val = visit_other_tile(&mut map, game, &tile);
+                        if val {return val}
+                    }
+                }
+                _ => {}
+            }
+        }
+    } else {
+
+    }
+
+    false
+}
+
+fn visit_other_tile(map: &mut HashMap<(u8,u8), ()>, game: & Game, tile: & Tile) -> bool{
+    let list = get_tile_around(game, tile, map);
+    for next_tile in list {
+        if *next_tile.player() == 1 && (next_tile.y() + 1) as usize == game.board[*next_tile.x() as usize].len() {return true};
+        if *next_tile.player() == 2 && (next_tile.x() + 1) as usize == game.board.len() {return true};
+        map.insert((*next_tile.x(), *next_tile.y()), ());
+        visit_other_tile(map, game, next_tile);
+    }
+    false
+}
+
+fn get_tile_around<'a>(game: &'a Game, tile: &Tile, map: &HashMap<(u8,u8), ()>) -> Vec<&'a Tile>{
+    let mut coordonate_list: Vec<(u8, u8)> = Vec::new();
+    let (x,y) = (tile.x(), tile.y());
+    if *y as i8 - 1 > 0 {coordonate_list.push((*x, y - 1))};
+    if *x as i8 - 1 > 0 {coordonate_list.push((x - 1, *y))};
+    if *y as i8 - 1 > 0 && x + 1 < game.board.len() as u8  {coordonate_list.push((x + 1, y - 1))};
+    if x + 1 < game.board.len() as u8 {coordonate_list.push((x + 1, *y))};
+    if y + 1 < game.board[*x as usize].len() as u8 {coordonate_list.push((*x, y + 1))};
+    if *x as i8 - 1 > 0 && y + 1 < game.board[*x as usize].len() as u8 {coordonate_list.push((x - 1, y + 1))};
+    
+    let mut list: Vec<&Tile> = Vec::new();
+    for (x, y) in coordonate_list {
+        match &(game.board[x as usize][y as usize]) {
+            Some(new_tile) if *new_tile.player() == *tile.player() && map.get(&(x, y)).is_none() => list.push(new_tile),
+            _ => {},
+        }
+    }
+    list
+}
+
+#[test]
+fn test_is_winner() {
+    let mut game = Game::new(5);
+    game.board[0][0] = Some(Tile::new(1, 0, 0));
+    game.board[0][1] = Some(Tile::new(1, 0, 1));
+    game.board[1][1] = Some(Tile::new(1, 1, 1));
+    is_winner(&game, 1);
+}
+
+#[test]
+fn test_visit_other_tile() {
+    let mut game = Game::new(5);
+    game.board[0][0] = Some(Tile::new(1, 0, 0));
+    game.board[0][1] = Some(Tile::new(1, 0, 1));
+    game.board[1][1] = Some(Tile::new(1, 1, 1));
+    let mut map: HashMap<(u8,u8), ()> = HashMap::new();
+    visit_other_tile(&mut map, &game, &Tile::new(1, 0, 0));
+}
+
+#[test]
+fn test_get_tile_around() {
+    let mut game = Game::new(5);
+    game.board[2][1] = Some(Tile::new(1, 2, 1));
+    game.board[3][1] = Some(Tile::new(1, 3, 1));
+    game.board[1][2] = Some(Tile::new(1, 1, 2));
+    game.board[3][2] = Some(Tile::new(1, 3, 2));
+    game.board[1][3] = Some(Tile::new(1, 1, 3));
+    game.board[2][3] = Some(Tile::new(1, 2, 3));
+    let result = get_tile_around(&game, &Tile::new(1, 2, 2), &HashMap::new());
+    assert_eq!(result.len(), 6);
+    let result = get_tile_around(&game, &Tile::new(2, 2, 2), &HashMap::new());
+    assert_eq!(result.len(), 0);
+
+    let mut map: HashMap<(u8,u8), ()> = HashMap::new();
+    map.insert((2,1), ());
+    let result = get_tile_around(&game, &Tile::new(1, 2, 2), &map);
+    assert_eq!(result.len(), 5);
+
+    game.board[1][3] = None;
+    let result = get_tile_around(&game, &Tile::new(1, 2, 2), &map);
+    assert_eq!(result.len(), 4);
+
+    let result = get_tile_around(&game, &Tile::new(1, 0, 0), &map);
+    assert_eq!(result.len(), 0);
+
+    let result = get_tile_around(&game, &Tile::new(1, 4, 4), &map);
+    assert_eq!(result.len(), 0);
+}
 
 #[test]
 fn test_change_player() {
