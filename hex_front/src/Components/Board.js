@@ -5,7 +5,7 @@ export default function Board(props) {
     const [PlayerTurn, setPlayerTurn] = useState(props.game.player);
 
     let handleClickBrd = (idX, idY) => {
-        fetch(`${process.env.REACT_APP_RASPBERRY || ""}/play`, {
+        fetch(`${process.env.REACT_APP_RASPBERRY || ""}/hex/play`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

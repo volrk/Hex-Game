@@ -6,7 +6,7 @@ export default function NewGame() {
   const [init, setInit] = useState(false);
 
   let handleClickNewGame = () => fetch(
-    `${process.env.REACT_APP_RASPBERRY || ""}/hex/new/5`,
+    `${process.env.REACT_APP_RASPBERRY || ""}/hex/new/11`,
     {
       method: "GET",
     }
