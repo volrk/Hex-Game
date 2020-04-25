@@ -12,7 +12,7 @@ pub struct Game {
 impl Game {
     pub fn new(val: u8) -> Game {
         Game{
-            board: (0..val).map(|_| (0..val).map(|_| None).collect()).collect(),
+            board: (0..val).map(|_| vec![None; val as usize]).collect(),
             player: 1,
             winner: None,
         }
@@ -71,9 +71,8 @@ fn is_winner(game: &Game, playeur: u8) -> bool {
 fn get_firsts_tiles_player_1(game: & Game) -> Vec<& Tile>{
     let mut list: Vec<&Tile> = Vec::new();
     for x in 0..(game.board.len()) {
-        match &game.board[x][0]{
-            Some(tile) if *tile.player() == 1  => {list.push(tile)},
-            _ => {},
+        if let Some(tile) = &game.board[x][0] {
+            if *tile.player() == 1  {list.push(tile)}
         }
     }
     list
@@ -82,9 +81,8 @@ fn get_firsts_tiles_player_1(game: & Game) -> Vec<& Tile>{
 fn get_firsts_tiles_player_2(game: & Game) -> Vec<& Tile>{
     let mut list: Vec<&Tile> = Vec::new();
     for o_tile in &(game.board[0]) {
-        match o_tile {
-            Some(tile) if *tile.player() == 2 => {list.push(tile)}
-            _ => {}
+        if let Some(tile) = o_tile {
+            if *tile.player() == 2 {list.push(tile)}
         }
     }
     list
@@ -113,9 +111,8 @@ fn get_tile_around<'a>(game: &'a Game, tile: &Tile, map: &HashMap<(u8,u8), ()>) 
 
     let mut list: Vec<&Tile> = Vec::new();
     for (x, y) in coordonate_list {
-        match &(game.board[x as usize][y as usize]) {
-            Some(new_tile) if *new_tile.player() == *tile.player() && map.get(&(x, y)).is_none() => list.push(new_tile),
-            _ => {},
+        if let Some(new_tile) = &(game.board[x as usize][y as usize]){
+            if *new_tile.player() == *tile.player() && map.get(&(x, y)).is_none() { list.push(new_tile) };
         }
     }
     list
@@ -127,14 +124,16 @@ fn test_is_winner() {
     game.board[0][0] = Some(Tile::new(1, 0, 0));
     game.board[0][1] = Some(Tile::new(1, 0, 1));
     // 1 0
-    // 1 0
+    //  1 0
     assert!(is_winner(&game, 1));
+    assert!(!is_winner(&game, 2));
 
     game.board[0][0] = Some(Tile::new(2, 0, 0));
     game.board[1][0] = Some(Tile::new(2, 1, 0));
     // 2 2
-    // 1 0
+    //  1 0
     assert!(is_winner(&game, 2));
+    assert!(!is_winner(&game, 1));
 
 }
 
@@ -145,6 +144,11 @@ fn test_get_firsts_tiles_player_1() {
     game.board[1][0] = Some(Tile::new(1, 1, 0));
     game.board[3][0] = Some(Tile::new(2, 3, 0));
     game.board[4][0] = Some(Tile::new(1, 4, 0));
+    // 1 1 0 2 1
+    //  0 0 0 0 0
+    //   0 0 0 0 0
+    //    0 0 0 0 0
+    //     0 0 0 0 0
     assert_eq!(get_firsts_tiles_player_1(&game).len(), 3);
 }
 
@@ -155,6 +159,11 @@ fn test_get_firsts_tiles_player_2() {
     game.board[0][1] = Some(Tile::new(2, 0, 1));
     game.board[0][3] = Some(Tile::new(1, 0, 3));
     game.board[0][4] = Some(Tile::new(2, 0, 4));
+    // 2 0 0 0 0
+    //  2 0 0 0 0
+    //   0 0 0 0 0
+    //    1 0 0 0 0
+    //     2 0 0 0 0
     assert_eq!(get_firsts_tiles_player_2(&game).len(), 3);
 }
 
@@ -164,23 +173,23 @@ fn test_visit_other_tile() {
     game.board[0][0] = Some(Tile::new(1, 0, 0));
     game.board[1][0] = Some(Tile::new(1, 1, 0));
     // 1 1
-    // 0 0
+    //  0 0
     assert!(!check_other_tile(&mut HashMap::new(), &game, &Tile::new(1, 0, 0)));
 
     game.board[0][1] = Some(Tile::new(1, 0, 1));
     // 1 1
-    // 1 0
+    //  1 0
     assert!(check_other_tile(&mut HashMap::new(), &game, &Tile::new(1, 0, 0)));
 
     game.board[0][1] = Some(Tile::new(2, 0, 1));
     // 1 1
-    // 2 0
+    //  2 0
     assert!(!check_other_tile(&mut HashMap::new(), &game, &Tile::new(1, 0, 0)));
     assert!(!check_other_tile(&mut HashMap::new(), &game, &Tile::new(2, 0, 1)));
 
     game.board[1][0] = Some(Tile::new(2, 1, 0));
     // 1 2
-    // 2 0
+    //  2 0
     assert!(check_other_tile(&mut HashMap::new(), &game, &Tile::new(2, 0, 1)));
 }
 
@@ -193,6 +202,11 @@ fn test_get_tile_around() {
     game.board[3][2] = Some(Tile::new(1, 3, 2));
     game.board[1][3] = Some(Tile::new(1, 1, 3));
     game.board[2][3] = Some(Tile::new(1, 2, 3));
+    // 0 0 0 0 0
+    //  0 0 1 1 0
+    //   0 1 0 1 0
+    //    0 1 1 0 0
+    //     0 0 0 0 0
     let result = get_tile_around(&game, &Tile::new(1, 2, 2), &HashMap::new());
     assert_eq!(result.len(), 6);
     let result = get_tile_around(&game, &Tile::new(2, 2, 2), &HashMap::new());
@@ -200,10 +214,16 @@ fn test_get_tile_around() {
 
     let mut map: HashMap<(u8,u8), ()> = HashMap::new();
     map.insert((2,1), ());
+
     let result = get_tile_around(&game, &Tile::new(1, 2, 2), &map);
     assert_eq!(result.len(), 5);
 
     game.board[1][3] = None;
+    // 0 0 0 0 0
+    //  0 0 1 0 0
+    //   0 1 0 1 0
+    //    0 1 1 0 0
+    //     0 0 0 0 0
     let result = get_tile_around(&game, &Tile::new(1, 2, 2), &map);
     assert_eq!(result.len(), 4);
 
@@ -216,6 +236,8 @@ fn test_get_tile_around() {
     let mut game = Game::new(2);
     game.board[0][1] = Some(Tile::new(2, 0, 1));
     game.board[1][0] = Some(Tile::new(2, 1, 0));
+    // 0 1
+    //  1 0
     let result = get_tile_around(&game, &Tile::new(2, 0, 1), &HashMap::new());
     assert_eq!(result.len(), 1);
 }
