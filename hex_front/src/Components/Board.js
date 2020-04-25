@@ -2,37 +2,35 @@ import React, { useState } from 'react';
 import Square from './Square';
 
 export default function Board(props) {
-    const [PlayerTurn, setPlayerTurn] = useState(props.game.player);
 
     let handleClickBrd = (idX, idY) => {
-        fetch(`${process.env.REACT_APP_RASPBERRY || ""}/hex/play`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ player: PlayerTurn, x: idX, y: idY })
-        })
-            .then(res => res.json())
-            .then(result => {
-                return props.setGame(result);
+        if (props.game.player === props.playerID) {
+            props.setCanPlay(false);
+            fetch(`${process.env.REACT_APP_RASPBERRY || ""}/hex/play`, {
+                method: 'POST',
+                body: JSON.stringify({ player: props.game.player, x: idX, y: idY })
             })
-        setPlayerTurn(3 - PlayerTurn);
-        // this.forceUpdate();
+                .then(res => res.json())
+                .then(result => {
+                    props.setGame(result);
+                })
+                .finally(() => props.setCanPlay(true))
+        }
     }
 
     return (
         <div>
-            C'est au tour du <span style={{ color: (PlayerTurn === 1) ? "lawngreen" : "red" }}> joueur {PlayerTurn} </span>
+            C'est au tour du <span style={{ color: (props.game.player === 1) ? "lawngreen" : "red" }}> joueur {props.game.player} </span>
             {
                 props.game.board.map((valX, indexX) => {
-                    return <div
+                    return <div key={indexX}
                         style={{ paddingLeft: 60 * indexX }}>
                         {valX.map((valY, indexY) => <Square
+                            key={indexY}
                             idxX={indexX}
                             idxY={indexY}
-                            PlayerTurn={PlayerTurn}
                             handleClickBrd={handleClickBrd}
+                            canPlay={props.canPlay}
                             player={valY ? valY.player : undefined} />
                         )}
                     </div>
