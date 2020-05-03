@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Board from './Components/Board'
 import Popup from "reactjs-popup";
 
@@ -7,6 +7,7 @@ export default function NewGame() {
   const [init, setInit] = useState(false);
   const [playerID, setPlayerId] = useState(null);
   const [canPlay, setCanPlay] = useState(false);
+  const [toogleTimer, setToogleTimer] = useState(false);
   const [gameId, setGameId] = useState(null);
   const [boardSize, setBoardSize] = useState(null);
 
@@ -35,6 +36,14 @@ export default function NewGame() {
       setGame(result);
     }
   );
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      await updateGame();
+      setToogleTimer(!toogleTimer);
+    }, 1000);
+    return () => { clearTimeout(timer); };
+  }, [toogleTimer]);
 
   let handleClickJoinGame = () => {
     updateGame();
@@ -85,6 +94,5 @@ export default function NewGame() {
   return (<div>
     Tu es le <b>joueur {playerID} </b> et tu joues à la partie <b>n° {game.id} </b>
     < Board game={game} setGame={setGame} playerID={playerID} setCanPlay={setCanPlay} canPlay={canPlay} />
-    <button onClick={updateGame}> Update </button>
   </div>)
 }
