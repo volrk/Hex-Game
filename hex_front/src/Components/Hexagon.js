@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './Hexagon.css';
 
 export default function Hexagon(props) {
@@ -10,7 +10,7 @@ export default function Hexagon(props) {
     }
 
     return (
-        <div className={`hexagon player${props.player}`} onClick={() => { handleClickHexagon() }}/>
+        <div className={`hexagon player${props.player}`} onClick={() => { handleClickHexagon() }} />
     );
 
 }

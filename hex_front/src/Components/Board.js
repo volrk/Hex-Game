@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Hexagon from './Hexagon';
 import Popup from "reactjs-popup";
 import './Board.css';
