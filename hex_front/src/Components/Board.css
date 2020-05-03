@@ -1,0 +1,9 @@
+.row:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+
+.board {
+    margin-top: 40px;
+}
