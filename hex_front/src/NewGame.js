@@ -32,8 +32,8 @@ export default function NewGame() {
     )
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      updateGame();
+    const timer = setTimeout(async () => {
+      await updateGame();
       setToogleTimer(!toogleTimer);
     }, 1000);
     return () => { clearTimeout(timer); };
