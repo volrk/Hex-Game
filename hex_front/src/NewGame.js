@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Board from './Components/Board'
 
 export default function NewGame() {
@@ -6,6 +6,7 @@ export default function NewGame() {
   const [init, setInit] = useState(false);
   const [playerID, setPlayerId] = useState(null);
   const [canPlay, setCanPlay] = useState(false);
+  const [toogleTimer, setToogleTimer] = useState(false);
 
   let handleClickNewGame = () => fetch(
     `${process.env.REACT_APP_RASPBERRY || ""}/hex/new/5`,
@@ -29,6 +30,14 @@ export default function NewGame() {
       setGame(result);
     }
     )
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateGame();
+      setToogleTimer(!toogleTimer);
+    }, 1000);
+    return () => { clearTimeout(timer); };
+  }, [toogleTimer]);
 
   let handleClickJoinGame = () => {
     updateGame();
@@ -54,6 +63,5 @@ export default function NewGame() {
   return (<div>
     Tu es le <b>joueur {playerID} </b>
     < Board game={game} setGame={setGame} playerID={playerID} setCanPlay={setCanPlay} canPlay={canPlay} />
-    <button onClick={updateGame}> Update </button>
   </div>)
 }
