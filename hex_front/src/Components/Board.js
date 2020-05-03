@@ -24,27 +24,27 @@ export default function Board(props) {
         let row = [];
         board[0].forEach((element, index) => {
             row.push(<Hexagon
-                key = {index}
-                player={2}/>)
+                key={index}
+                player={2} />)
         });
         return row;
     }
 
-    let boardWidth = 76 * (props.game.board.length + (props.game.board.length - 1)/2 + 2);
+    let boardWidth = 76 * (props.game.board.length + (props.game.board.length - 1) / 2 + 2);
 
     return (
         <div>
             C'est au tour du <span style={{ color: (props.game.player === 1) ? "lawngreen" : "red" }}> joueur {props.game.player} </span>
-            <div className = {"board"} style = {{ width: boardWidth, marginLeft: `calc(calc(100% - ${boardWidth}px)/2)` }}>
-                <div className = {"row"} style = {{ paddingLeft: 38 }}>
+            <div className={"board"} style={{ width: boardWidth, marginLeft: `calc(calc(100% - ${boardWidth}px)/2)` }}>
+                <div className={"row"} style={{ paddingLeft: 38 }}>
                     {getPlayeur2Line(props.game.board)}
                 </div>
                 {
                     props.game.board.map((valX, indexX) => {
                         return <div key={indexX}
-                            className = {"row"}
-                            style = {{ paddingLeft: 38 * indexX }}>
-                            <Hexagon player = {1} />
+                            className={"row"}
+                            style={{ paddingLeft: 38 * indexX }}>
+                            <Hexagon player={1} />
                             {valX.map((valY, indexY) => <Hexagon
                                 key={indexY}
                                 idxX={indexX}
@@ -53,11 +53,11 @@ export default function Board(props) {
                                 canPlay={props.canPlay}
                                 player={valY ? valY.player : undefined} />
                             )}
-                            <Hexagon player = {1} />
+                            <Hexagon player={1} />
                         </div>
                     })
                 }
-                <div className = {"row"} style = {{ paddingLeft: 38 * ( props.game.board.length + 2 ) }}>
+                <div className={"row"} style={{ paddingLeft: 38 * (props.game.board.length + 2) }}>
                     {getPlayeur2Line(props.game.board)}
                 </div>
             </div>
@@ -65,7 +65,7 @@ export default function Board(props) {
                 open={props.game.winner != null}
                 closeOnDocumentClick>
                 <div >
-                    <span style={{ color: (props.game.winner === 1) ? "lawngreen" : "red" }}> joueur {props.game.winner} à gagné</span>
+                    <span style={{ color: (props.game.winner === 1) ? "lawngreen" : "red" }}> <b>Joueur {props.game.winner} a gagné </b></span>
                 </div>
             </Popup>
         </ div>
