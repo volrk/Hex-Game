@@ -13,6 +13,7 @@ use rocket_cors::{
 };
 use rocket::http::Status;
 use rocket::response::status::Custom;
+use rocket_contrib::serve::StaticFiles;
 
 mod game;
 mod tile;
@@ -111,6 +112,7 @@ fn main() {
     .manage(init_state_hashmap())
     .manage(init_state_vec())
     .mount("/", routes![index, new, new_by_id, get_current, get_current_by_id, play, play_by_id])
+    .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/static")))
     .attach(make_cors())
     .launch();
 }
