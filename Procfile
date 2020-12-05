@@ -1,1 +1,1 @@
-web: ROCKET_PORT=80 ROCKET_KEEP_ALIVE=0 ./hex_back/target/release/hex_back
+web: ROCKET_PORT=8000 ROCKET_KEEP_ALIVE=0 ./hex_back/target/release/hex_back
