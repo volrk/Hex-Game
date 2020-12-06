@@ -7,6 +7,7 @@ extern crate rocket_cors;
 use rocket_contrib::json::Json;
 use std::sync::Mutex;
 use std::collections::HashMap;
+use std::env;
 use rocket::State;
 use rocket_cors::{
     Cors, CorsOptions
@@ -108,7 +109,14 @@ fn play_by_id(s_map: State<HashMap<u8, Mutex<game::Game>>>, s_vec: State<Mutex<V
 }
 
 fn main() {
-    println!(env!("CARGO_MANIFEST_DIR"));
+    match env::var("CARGO_MANIFEST_DIR") {
+        Ok(val) => println!("CARGO_MANIFEST_DIR  : {}", val),
+        Err(e) => println!("CARGO_MANIFEST_DIR : couldn't interpret : {}", e),
+    }
+    match env::var("ROCKET_PORT") {
+        Ok(val) => println!("ROCKET_PORT : {}", val),
+        Err(e) => println!("ROCKET_PORT : couldn't interpret : {}", e),
+    }
     rocket::ignite()
     .manage(init_state_hashmap())
     .manage(init_state_vec())
