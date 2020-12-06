@@ -109,6 +109,10 @@ fn play_by_id(s_map: State<HashMap<u8, Mutex<game::Game>>>, s_vec: State<Mutex<V
 }
 
 fn main() {
+    match env::current_dir() {
+        Ok(val) => println!("{}", val.display()),
+        Err(_) => println!("error"),
+    }
     let path;
     match env::var("RUN_HEROKU") {
         Ok(_) => path = "../../static",
