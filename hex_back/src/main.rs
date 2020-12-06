@@ -108,6 +108,7 @@ fn play_by_id(s_map: State<HashMap<u8, Mutex<game::Game>>>, s_vec: State<Mutex<V
 }
 
 fn main() {
+    println!(env!("CARGO_MANIFEST_DIR"));
     rocket::ignite()
     .manage(init_state_hashmap())
     .manage(init_state_vec())
