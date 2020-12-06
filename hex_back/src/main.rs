@@ -109,19 +109,16 @@ fn play_by_id(s_map: State<HashMap<u8, Mutex<game::Game>>>, s_vec: State<Mutex<V
 }
 
 fn main() {
-    match env::var("CARGO_MANIFEST_DIR") {
-        Ok(val) => println!("CARGO_MANIFEST_DIR  : {}", val),
-        Err(e) => println!("CARGO_MANIFEST_DIR : couldn't interpret : {}", e),
-    }
-    match env::var("ROCKET_PORT") {
-        Ok(val) => println!("ROCKET_PORT : {}", val),
-        Err(e) => println!("ROCKET_PORT : couldn't interpret : {}", e),
+    let path;
+    match env::var("RUN_HEROKU") {
+        Ok(_) => path = "../../static",
+        Err(_) => path = concat!(env!("CARGO_MANIFEST_DIR"), "/static"),
     }
     rocket::ignite()
     .manage(init_state_hashmap())
     .manage(init_state_vec())
     .mount("/", routes![index, new, new_by_id, get_current, get_current_by_id, play, play_by_id])
-    .mount("/", StaticFiles::from(concat!(env!("CARGO_MANIFEST_DIR"), "/static")))
+    .mount("/", StaticFiles::from(path))
     .attach(make_cors())
     .launch();
 }
