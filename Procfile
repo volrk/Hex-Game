@@ -1,1 +1,1 @@
-web: ROCKET_PORT=$PORT ROCKET_KEEP_ALIVE=0 ./hex_back/target/release/hex_back
+web: CARGO_MANIFEST_DIR="./hex_back" ROCKET_PORT=$PORT ROCKET_KEEP_ALIVE=0 ./hex_back/target/release/hex_back
